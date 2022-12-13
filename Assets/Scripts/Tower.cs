@@ -5,7 +5,7 @@ public class Tower : MonoBehaviour
 {
     private float life = 1000;
     private float maxLife = 1000;
-    public Scrollbar Scrollbar;
+    public Slider Slider;
     public static Tower instance;
 
     private void Awake()
@@ -25,7 +25,7 @@ public class Tower : MonoBehaviour
 
     private void updateScrollBar()
     {
-        Scrollbar.size = life / maxLife;
+        Slider.value = life / maxLife;
     }
 
 

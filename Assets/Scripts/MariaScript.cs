@@ -41,7 +41,7 @@ public class MariaScript : MonoBehaviour
         }
     }
 
-    public string GetCurrentClipName()
+   /* public string GetCurrentClipName()
     {
         var clipInfo = _animator.GetCurrentAnimatorClipInfo(0);
         return clipInfo[0].clip.name;
@@ -62,7 +62,7 @@ public class MariaScript : MonoBehaviour
                 toastObject.Call("show");
             }));
         }
-    }
+    }*/
 
     private void OnTriggerEnter(Collider other)
     {
