@@ -36,7 +36,7 @@ public class MariaScript : MonoBehaviour
             if (timepassed > _animator.GetCurrentAnimatorStateInfo(0).length)
             {
                 timepassed = 0;
-                Tower.towerTakeDamage(100);
+                Tower.towerTakeDamage(10);
             }
         }
     }

@@ -38,5 +38,10 @@ public class Tower : MonoBehaviour
     {
         life -= damage;
         updateScrollBar();
+        if (life <= 0)
+        {
+            GameOverScreen.instance.won();
+
+        }
     }
 }

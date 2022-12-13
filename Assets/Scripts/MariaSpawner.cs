@@ -8,16 +8,19 @@ public class MariaSpawner : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        timePassed += Time.deltaTime;
-        if (timePassed > spawnRate)
+        if (!GameOverScreen.GameOver)
         {
-            timePassed = 0;
+            timePassed += Time.deltaTime;
+            if (timePassed > spawnRate)
+            {
+                timePassed = 0;
 
 
-            Vector3 pos = transform.position;
-            pos.y -= 0.1f;
+                Vector3 pos = transform.position;
+                pos.y -= 0.1f;
 
-            Instantiate(GameManager.maria, pos, Quaternion.identity);
+                Instantiate(GameManager.maria, pos, Quaternion.identity);
+            }
         }
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -6,6 +7,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.ARSubsystems;
+using Random = UnityEngine.Random;
 
 public class GameManager : MonoBehaviour
 {
@@ -15,6 +17,7 @@ public class GameManager : MonoBehaviour
     private bool canPlace = true;
     public int logs;
     public TMP_Text logsText;
+    public TMP_Text timerText;
     List<ARRaycastHit> m_Hits = new List<ARRaycastHit>();
     public bool CampButtonSelected = false;
     public int campCost = 1;
@@ -48,86 +51,100 @@ public class GameManager : MonoBehaviour
         }
     }
 
-
+    private float timer;
     private float timePassed;
 
     void Update()
     {
-        ForceSelectGameObject();
-
-        timePassed += Time.deltaTime;
-        if (timePassed > 5)
+        if (!GameOverScreen.GameOver)
         {
-            spawnTree();
+            
+            TimeSpan t = TimeSpan.FromSeconds( timer );
+            timer += Time.deltaTime;
 
-            timePassed = 0;
-        }
+            string timerString = string.Format("{0:D2}h:{1:D2}m:{2:D2}s", 
+                t.Hours, 
+                t.Minutes, 
+                t.Seconds);
 
-        if (logs >= campCost && canPlace)
-        {
-            CampButton.interactable = true;
-        }
-        else
-        {
-            CampButton.interactable = false;
-            CampButtonSelected = false;
-        }
+            timerText.text = timerString;
+            
+            ForceSelectGameObject();
 
-        if (Input.touchCount > 0)
-        {
-            PointerEventData ped = new PointerEventData(null);
-
-            ped.position = Input.GetTouch(0).position;
-
-            List<RaycastResult> results = new List<RaycastResult>();
-
-            GraphicRaycaster.Raycast(ped, results);
-
-            if (results.Count > 0)
+            timePassed += Time.deltaTime;
+            if (timePassed > 5)
             {
-                return;
+                spawnTree();
+
+                timePassed = 0;
             }
 
-            if (Input.GetTouch(0).phase == TouchPhase.Began)
+            if (logs >= campCost && canPlace)
             {
-                Ray ray = Camera.main.ScreenPointToRay(Input.GetTouch(0).position);
-                RaycastHit hit;
-                
-                if (Physics.Raycast(ray, out hit, Mathf.Infinity))
-                {
-                    GameObject obj = hit.collider.gameObject;
-                    // PlanAnchor.instance.text.text = hit.collider.tag;
+                CampButton.interactable = true;
+            }
+            else
+            {
+                CampButton.interactable = false;
+                CampButtonSelected = false;
+            }
 
-                    if (hit.collider.tag.Equals("Tree"))
+            if (Input.touchCount > 0)
+            {
+                PointerEventData ped = new PointerEventData(null);
+
+                ped.position = Input.GetTouch(0).position;
+
+                List<RaycastResult> results = new List<RaycastResult>();
+
+                GraphicRaycaster.Raycast(ped, results);
+
+                if (results.Count > 0)
+                {
+                    return;
+                }
+
+                if (Input.GetTouch(0).phase == TouchPhase.Began)
+                {
+                    Ray ray = Camera.main.ScreenPointToRay(Input.GetTouch(0).position);
+                    RaycastHit hit;
+
+                    if (Physics.Raycast(ray, out hit, Mathf.Infinity))
                     {
-                        Animator animator = obj.GetComponent<Animator>();
-                        TreeScript s = obj.GetComponent<TreeScript>();
-                        if (s.canTake)
+                        GameObject obj = hit.collider.gameObject;
+                        // PlanAnchor.instance.text.text = hit.collider.tag;
+
+                        if (hit.collider.tag.Equals("Tree"))
                         {
-                            animator.SetTrigger("Decap");
-                            s.canTake = false;
-                            logs++;
-                            UpdateLogs();
-                            StartCoroutine(removeObj(obj, 2));
-                            return;
+                            Animator animator = obj.GetComponent<Animator>();
+                            TreeScript s = obj.GetComponent<TreeScript>();
+                            if (s.canTake)
+                            {
+                                animator.SetTrigger("Decap");
+                                s.canTake = false;
+                                logs++;
+                                UpdateLogs();
+                                StartCoroutine(removeObj(obj, 2));
+                                return;
+                            }
                         }
                     }
                 }
-            }
 
-            if (PlanAnchor.playing && canPlace && logs >= campCost && CampButton.IsInteractable() &&
-                EventSystem.current.currentSelectedGameObject == CampButton.gameObject)
-            {
-                if (target == null)
+                if (PlanAnchor.playing && canPlace && logs >= campCost && CampButton.IsInteractable() &&
+                    EventSystem.current.currentSelectedGameObject == CampButton.gameObject)
                 {
-                    target = GameObject.FindWithTag("Target");
-                }
+                    if (target == null)
+                    {
+                        target = GameObject.FindWithTag("Target");
+                    }
 
 
-                if (
-                    PlanAnchor.instance.m_RaycastManager.Raycast(Input.GetTouch(0).position, m_Hits))
-                {
-                    HandleRaycast(m_Hits[Random.Range(0, m_Hits.Count)]);
+                    if (
+                        PlanAnchor.instance.m_RaycastManager.Raycast(Input.GetTouch(0).position, m_Hits))
+                    {
+                        HandleRaycast(m_Hits[Random.Range(0, m_Hits.Count)]);
+                    }
                 }
             }
         }
