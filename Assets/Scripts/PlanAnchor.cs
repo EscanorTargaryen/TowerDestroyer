@@ -109,8 +109,9 @@ public class PlanAnchor : MonoBehaviour
         Vector3 v = selectedPlane.center;
         v.y += 0.2f;
 
-        Instantiate(Tower, v, Quaternion.Euler(0, 0, 0));
+        var t=Instantiate(Tower, v, Quaternion.Euler(0, 0, 0));
         GameManager.instance.GameUI.SetActive(true);
+        
     }
 
   

@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class MariaSpawner : MonoBehaviour
 {
-    private float timePassed;
+    private float timePassed=10;
     private float spawnRate = 5;
 
    

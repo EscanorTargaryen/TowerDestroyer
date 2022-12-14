@@ -1,12 +1,13 @@
+using DefaultNamespace;
 using UnityEngine;
 
-public class MutantBehavior : MonoBehaviour
+public class MutantBehavior : MonoBehaviour, Damagable
 {
     float speed = 0.1f;
     private bool attacking = false;
     private Animator _animator;
 
-    private float life = 100;
+    private float life = 1;
     private GameObject target;
     private State _state;
 
@@ -42,6 +43,9 @@ public class MutantBehavior : MonoBehaviour
                     {
                         _animator.SetTrigger("idle");
                         _animator.ResetTrigger("run");
+                        _animator.ResetTrigger("attack");
+                        _animator.ResetTrigger("dying");
+                        _state = State.IDLE;
                         break;
                     }
                 }
@@ -50,12 +54,21 @@ public class MutantBehavior : MonoBehaviour
                 transform.position = Vector3.MoveTowards(transform.position, target.transform.position, step);
                 break;
             case State.IDLE:
-                if (findNewTarget() != null)
+
+                if (target == null)
+                {
+                    findNewTarget();
+                }
+
+                if (target != null)
                 {
                     _state = State.RUN;
                     _animator.SetTrigger("run");
                     _animator.ResetTrigger("idle");
+                    _animator.ResetTrigger("attack");
+                    _animator.ResetTrigger("dying");
                 }
+
 
                 break;
 
@@ -69,6 +82,8 @@ public class MutantBehavior : MonoBehaviour
                 }
                 else
                 {
+                    if (Vector3.Distance(transform.position, target.transform.position) > 10)
+                        transform.LookAt(target.transform.position);
                     timepassed += Time.deltaTime;
                     if (timepassed > _animator.GetCurrentAnimatorStateInfo(0).length)
                     {
@@ -85,6 +100,8 @@ public class MutantBehavior : MonoBehaviour
 
 
                 break;
+            case State.DYING:
+                break;
         }
     }
 
@@ -95,6 +112,7 @@ public class MutantBehavior : MonoBehaviour
             _animator.SetTrigger("attack");
             _animator.ResetTrigger("idle");
             _animator.ResetTrigger("run");
+            _animator.ResetTrigger("dying");
             _state = State.ATTACK;
         }
     }
@@ -110,12 +128,30 @@ public class MutantBehavior : MonoBehaviour
         }
     }
 
-    private void takeDamage(float damage)
+    public void takeDamage(float damage)
     {
+        _ShowAndroidToastMessage("ss");
         life -= damage;
+        if (!isAlive())
+        {
+            if (calls == 0)
+            {
+                calls++;
+                _animator.SetTrigger("dying");
+                _animator.ResetTrigger("run");
+                _animator.ResetTrigger("idle");
+                _animator.ResetTrigger("attack");
+                _state = State.DYING;
+                GameManager.MutantList.Remove(gameObject);
+                Destroy(gameObject, 2f);
+            }
+        }
     }
 
-    private bool isAlive()
+    private int calls = 0;
+
+
+    public bool isAlive()
     {
         return life > 0;
     }
@@ -125,27 +161,46 @@ public class MutantBehavior : MonoBehaviour
         target = null;
         foreach (var m in GameManager.mariaList)
         {
-            if (target == null)
-            {
-                target = m;
-            }
-            else
-            {
-                if (Vector3.Distance(transform.position, m.transform.position) <
-                    Vector3.Distance(transform.position, target.transform.position))
+            if (m.GetComponent<MariaScript>().isAlive())
+                if (target == null)
                 {
                     target = m;
                 }
-            }
+                else
+                {
+                    if (Vector3.Distance(transform.position, m.transform.position) <
+                        Vector3.Distance(transform.position, target.transform.position))
+                    {
+                        target = m;
+                    }
+                }
         }
 
         return target;
+    }
+
+    private void _ShowAndroidToastMessage(string message)
+    {
+        AndroidJavaClass unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
+        AndroidJavaObject unityActivity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
+
+        if (unityActivity != null)
+        {
+            AndroidJavaClass toastClass = new AndroidJavaClass("android.widget.Toast");
+            unityActivity.Call("runOnUiThread", new AndroidJavaRunnable(() =>
+            {
+                AndroidJavaObject toastObject =
+                    toastClass.CallStatic<AndroidJavaObject>("makeText", unityActivity, message, 0);
+                toastObject.Call("show");
+            }));
+        }
     }
 
     private enum State
     {
         IDLE,
         ATTACK,
-        RUN
+        RUN,
+        DYING
     }
 }

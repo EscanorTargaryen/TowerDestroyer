@@ -1,88 +1,195 @@
+using DefaultNamespace;
 using UnityEngine;
 
-public class MariaScript : MonoBehaviour
+public class MariaScript : MonoBehaviour, Damagable
 {
     float speed = 0.1f;
-    private bool attacking = false;
-    private Animator _animator;
 
+    private Animator _animator;
+    private GameObject target;
+    private Damagable targetD;
     private float life = 100;
+    private State _state;
 
     private void Awake()
     {
-        
         transform.LookAt(GameManager.target.transform);
         _animator = GetComponent<Animator>();
     }
 
     void Start()
     {
+        _state = State.RUN;
+        findNewTarget();
+        _animator.ResetTrigger("dying");
+        _animator.SetTrigger("run");
+        _animator.ResetTrigger("attack");
     }
 
     private float timepassed;
 
     void Update()
     {
-        if (!attacking)
+        if (target != null)
         {
-            var step = speed * Time.deltaTime;
+            if (_state != State.ATTACK)
+            {
+                timepassed = 0;
+            }
 
-            Vector3 target = GameManager.target.transform.position;
-            target.y = transform.position.y;
+            switch (_state)
+            {
+                case State.DYING:
 
-            transform.position = Vector3.MoveTowards(transform.position, target, step);
+                    break;
+                case State.RUN:
+
+                    var step = speed * Time.deltaTime;
+
+                    transform.LookAt(target.transform.position);
+                    Vector3 move = new Vector3(target.transform.position.x, transform.position.y,
+                        target.transform.position.z);
+
+                    transform.position = Vector3.MoveTowards(transform.position, move, step);
+                    break;
+
+                case State.ATTACK:
+
+                    if (target != null)
+                    {
+                        if (Vector3.Distance(transform.position, target.transform.position) > 10)
+                            transform.LookAt(target.transform.position);
+                        timepassed += Time.deltaTime;
+                        if (timepassed > _animator.GetCurrentAnimatorStateInfo(0).length)
+                        {
+                            timepassed = 0;
+                            targetD.takeDamage(10);
+                            if (!targetD.isAlive())
+                            {
+                                target = null;
+                                findNewTarget();
+                                _animator.ResetTrigger("dying");
+                                _animator.SetTrigger("run");
+                                _animator.ResetTrigger("attack");
+                                _state = State.RUN;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        findNewTarget();
+                    }
+
+
+                    break;
+            }
         }
         else
         {
-            timepassed += Time.deltaTime;
-            if (timepassed > _animator.GetCurrentAnimatorStateInfo(0).length)
-            {
-                timepassed = 0;
-                Tower.towerTakeDamage(10);
-            }
+            findNewTarget();
         }
     }
-
-    /* public string GetCurrentClipName()
-     {
-         var clipInfo = _animator.GetCurrentAnimatorClipInfo(0);
-         return clipInfo[0].clip.name;
-     }
- 
-     private void _ShowAndroidToastMessage(string message)
-     {
-         AndroidJavaClass unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
-         AndroidJavaObject unityActivity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
- 
-         if (unityActivity != null)
-         {
-             AndroidJavaClass toastClass = new AndroidJavaClass("android.widget.Toast");
-             unityActivity.Call("runOnUiThread", new AndroidJavaRunnable(() =>
-             {
-                 AndroidJavaObject toastObject =
-                     toastClass.CallStatic<AndroidJavaObject>("makeText", unityActivity, message, 0);
-                 toastObject.Call("show");
-             }));
-         }
-     }*/
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.tag.Equals("Target"))
+        if (other.gameObject.Equals(target))
         {
-            attacking = true;
-
             _animator.SetTrigger("attack");
+
+            _animator.ResetTrigger("dying");
+            _animator.ResetTrigger("run");
+
+            _state = State.ATTACK;
         }
     }
+
+    private int calls = 0;
 
     public void takeDamage(float damage)
     {
         life -= damage;
+
+        if (!isAlive())
+        {
+            if (calls == 0)
+            {
+                calls++;
+                _animator.SetTrigger("dying");
+                _animator.ResetTrigger("run");
+                _animator.ResetTrigger("attack");
+                _state = State.DYING;
+                GameManager.mariaList.Remove(gameObject);
+                Destroy(gameObject, 2f);
+            }
+        }
     }
+
 
     public bool isAlive()
     {
         return life > 0;
+    }
+
+    public void findNewTarget()
+    {
+        target = null;
+        foreach (var m in GameManager.MutantList)
+        {
+            if (m.GetComponent<MutantBehavior>().isAlive())
+                if (target == null)
+                {
+                    target = m;
+                }
+                else
+                {
+                    if (Vector3.Distance(transform.position, m.transform.position) <
+                        Vector3.Distance(transform.position, target.transform.position))
+                    {
+                        target = m;
+                    }
+                }
+        }
+
+        if (target == null || Vector3.Distance(transform.position, GameManager.target.transform.position) <
+            Vector3.Distance(transform.position, target.transform.position))
+        {
+            target = GameManager.target;
+            targetD = GameManager.target.GetComponent<Tower>();
+        }
+        else
+        {
+            targetD = target.GetComponent<MutantBehavior>();
+        }
+    }
+
+    public string GetCurrentClipName()
+    {
+        var clipInfo = _animator.GetCurrentAnimatorClipInfo(0);
+        return clipInfo[0].clip.name;
+    }
+
+    private void _ShowAndroidToastMessage(string message)
+    {
+        AndroidJavaClass unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
+        AndroidJavaObject unityActivity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
+
+        if (unityActivity != null)
+        {
+            AndroidJavaClass toastClass = new AndroidJavaClass("android.widget.Toast");
+            unityActivity.Call("runOnUiThread", new AndroidJavaRunnable(() =>
+            {
+                AndroidJavaObject toastObject =
+                    toastClass.CallStatic<AndroidJavaObject>("makeText", unityActivity, message, 0);
+                toastObject.Call("show");
+            }));
+        }
+    }
+
+
+    private enum State
+    {
+        ATTACK,
+        RUN,
+        DYING
     }
 }

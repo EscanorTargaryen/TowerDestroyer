@@ -30,7 +30,8 @@ public class GameManager : MonoBehaviour
     public GraphicRaycaster GraphicRaycaster;
 
     public static List<GameObject> mariaList = new List<GameObject>();
-    
+    public static List<GameObject> MutantList = new List<GameObject>();
+
     private void Awake()
     {
         instance = this;
@@ -41,7 +42,6 @@ public class GameManager : MonoBehaviour
         GameUI.SetActive(false);
     }
 
- 
 
     private void spawnTree()
     {
@@ -63,17 +63,16 @@ public class GameManager : MonoBehaviour
     {
         if (!GameOverScreen.GameOver)
         {
-            
-            TimeSpan t = TimeSpan.FromSeconds( timer );
+            TimeSpan t = TimeSpan.FromSeconds(timer);
             timer += Time.deltaTime;
 
-            string timerString = string.Format("{0:D2}h:{1:D2}m:{2:D2}s", 
-                t.Hours, 
-                t.Minutes, 
+            string timerString = string.Format("{0:D2}h:{1:D2}m:{2:D2}s",
+                t.Hours,
+                t.Minutes,
                 t.Seconds);
 
             timerText.text = timerString;
-            
+
             ForceSelectGameObject();
 
             timePassed += Time.deltaTime;
@@ -117,7 +116,6 @@ public class GameManager : MonoBehaviour
                     if (Physics.Raycast(ray, out hit, Mathf.Infinity))
                     {
                         GameObject obj = hit.collider.gameObject;
-                        // PlanAnchor.instance.text.text = hit.collider.tag;
 
                         if (hit.collider.tag.Equals("Tree"))
                         {

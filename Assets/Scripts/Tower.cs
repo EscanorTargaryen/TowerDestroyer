@@ -1,7 +1,8 @@
+using DefaultNamespace;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class Tower : MonoBehaviour
+public class Tower : MonoBehaviour, Damagable
 {
     private float life = 1000;
     private float maxLife = 1000;
@@ -16,13 +17,28 @@ public class Tower : MonoBehaviour
     void Start()
     {
         updateScrollBar();
-
-        Instantiate(GameManager.mutant, transform.position, Quaternion.identity);
     }
 
+    private void spawnMutant()
+    {
+        Vector3 m = transform.position;
+        m.y -= 0.3f;
+
+        var mu = Instantiate(GameManager.mutant, m, Quaternion.identity);
+        GameManager.MutantList.Add(mu);
+    }
+
+    private float timepassed = 0;
 
     void Update()
     {
+        timepassed += Time.deltaTime;
+
+        if (timepassed > 10)
+        {
+            timepassed = 0;
+            spawnMutant();
+        }
     }
 
     private void updateScrollBar()
@@ -30,13 +46,9 @@ public class Tower : MonoBehaviour
         Slider.value = life / maxLife;
     }
 
+    
 
-    public static void towerTakeDamage(int damage)
-    {
-        instance.takeDamage(damage);
-    }
-
-    public void takeDamage(int damage)
+    public void takeDamage(float damage)
     {
         life -= damage;
         updateScrollBar();
@@ -44,5 +56,10 @@ public class Tower : MonoBehaviour
         {
             GameOverScreen.instance.won();
         }
+    }
+
+    public bool isAlive()
+    {
+        return life > 0;
     }
 }
