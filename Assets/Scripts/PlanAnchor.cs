@@ -1,8 +1,10 @@
+using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.ARSubsystems;
+using Random = UnityEngine.Random;
 
 public class PlanAnchor : MonoBehaviour
 {
@@ -110,6 +112,8 @@ public class PlanAnchor : MonoBehaviour
         Instantiate(Tower, v, Quaternion.Euler(0, 0, 0));
         GameManager.instance.GameUI.SetActive(true);
     }
+
+  
 
     private void planeChanged(ARPlanesChangedEventArgs args)
     {

@@ -3,12 +3,14 @@ using UnityEngine;
 public class MariaScript : MonoBehaviour
 {
     float speed = 0.1f;
-    public Animator anim;
     private bool attacking = false;
     private Animator _animator;
 
+    private float life = 100;
+
     private void Awake()
     {
+        
         transform.LookAt(GameManager.target.transform);
         _animator = GetComponent<Animator>();
     }
@@ -41,28 +43,28 @@ public class MariaScript : MonoBehaviour
         }
     }
 
-   /* public string GetCurrentClipName()
-    {
-        var clipInfo = _animator.GetCurrentAnimatorClipInfo(0);
-        return clipInfo[0].clip.name;
-    }
-
-    private void _ShowAndroidToastMessage(string message)
-    {
-        AndroidJavaClass unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
-        AndroidJavaObject unityActivity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
-
-        if (unityActivity != null)
-        {
-            AndroidJavaClass toastClass = new AndroidJavaClass("android.widget.Toast");
-            unityActivity.Call("runOnUiThread", new AndroidJavaRunnable(() =>
-            {
-                AndroidJavaObject toastObject =
-                    toastClass.CallStatic<AndroidJavaObject>("makeText", unityActivity, message, 0);
-                toastObject.Call("show");
-            }));
-        }
-    }*/
+    /* public string GetCurrentClipName()
+     {
+         var clipInfo = _animator.GetCurrentAnimatorClipInfo(0);
+         return clipInfo[0].clip.name;
+     }
+ 
+     private void _ShowAndroidToastMessage(string message)
+     {
+         AndroidJavaClass unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
+         AndroidJavaObject unityActivity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
+ 
+         if (unityActivity != null)
+         {
+             AndroidJavaClass toastClass = new AndroidJavaClass("android.widget.Toast");
+             unityActivity.Call("runOnUiThread", new AndroidJavaRunnable(() =>
+             {
+                 AndroidJavaObject toastObject =
+                     toastClass.CallStatic<AndroidJavaObject>("makeText", unityActivity, message, 0);
+                 toastObject.Call("show");
+             }));
+         }
+     }*/
 
     private void OnTriggerEnter(Collider other)
     {
@@ -70,7 +72,17 @@ public class MariaScript : MonoBehaviour
         {
             attacking = true;
 
-            anim.SetTrigger("attack");
+            _animator.SetTrigger("attack");
         }
+    }
+
+    public void takeDamage(float damage)
+    {
+        life -= damage;
+    }
+
+    public bool isAlive()
+    {
+        return life > 0;
     }
 }

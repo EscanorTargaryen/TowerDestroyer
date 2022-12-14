@@ -5,7 +5,7 @@ public class MariaSpawner : MonoBehaviour
     private float timePassed;
     private float spawnRate = 5;
 
-    // Update is called once per frame
+   
     void Update()
     {
         if (!GameOverScreen.GameOver)
@@ -19,7 +19,8 @@ public class MariaSpawner : MonoBehaviour
                 Vector3 pos = transform.position;
                 pos.y -= 0.1f;
 
-                Instantiate(GameManager.maria, pos, Quaternion.identity);
+                var m = Instantiate(GameManager.maria, pos, Quaternion.identity);
+                GameManager.mariaList.Add(m);
             }
         }
     }

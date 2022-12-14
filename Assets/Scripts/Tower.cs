@@ -16,6 +16,8 @@ public class Tower : MonoBehaviour
     void Start()
     {
         updateScrollBar();
+
+        Instantiate(GameManager.mutant, transform.position, Quaternion.identity);
     }
 
 
@@ -41,7 +43,6 @@ public class Tower : MonoBehaviour
         if (life <= 0)
         {
             GameOverScreen.instance.won();
-
         }
     }
 }

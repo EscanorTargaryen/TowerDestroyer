@@ -13,6 +13,7 @@ public class GameManager : MonoBehaviour
 {
     public static GameObject target;
     public static GameObject maria;
+    public static GameObject mutant;
     private GameObject Camp;
     private bool canPlace = true;
     public int logs;
@@ -28,15 +29,19 @@ public class GameManager : MonoBehaviour
     public Button CampButton;
     public GraphicRaycaster GraphicRaycaster;
 
-
+    public static List<GameObject> mariaList = new List<GameObject>();
+    
     private void Awake()
     {
         instance = this;
         maria = (GameObject)Resources.Load("prefab/Maria", typeof(GameObject));
+        mutant = (GameObject)Resources.Load("prefab/Mutant", typeof(GameObject));
         Tree = (GameObject)Resources.Load("prefab/Tree", typeof(GameObject));
         Camp = (GameObject)Resources.Load("prefab/Camp", typeof(GameObject));
         GameUI.SetActive(false);
     }
+
+ 
 
     private void spawnTree()
     {

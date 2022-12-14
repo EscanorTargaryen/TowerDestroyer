@@ -1225,7 +1225,7 @@ GameObject:
   - component: {fileID: 6197438213011552762}
   m_Layer: 0
   m_Name: Maria
-  m_TagString: Player
+  m_TagString: Maria
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1293,7 +1293,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5fce8898dacdc2747974a3658f0de720, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  anim: {fileID: 3983026014371673414}
 --- !u!54 &6197438213011552762
 Rigidbody:
   m_ObjectHideFlags: 0
