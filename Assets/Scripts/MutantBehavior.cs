@@ -9,7 +9,7 @@ public class MutantBehavior : MonoBehaviour, Damagable
     private Animator _animator;
 
     private float life = 120;
-    private float maxLife = 1;
+    private float maxLife = 120;
     public Slider Slider;
     private GameObject target;
     private State _state;

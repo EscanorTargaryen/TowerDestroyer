@@ -10,7 +10,7 @@ public class MariaScript : MonoBehaviour, Damagable
     private GameObject target;
     private Damagable targetD;
     private float life = 100;
-    private float maxLife = 1;
+    private float maxLife = 100;
     public Slider Slider;
     private State _state;
 
