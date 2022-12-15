@@ -49,8 +49,8 @@ public class GameManager : MonoBehaviour
         {
             Vector3 pos = PlanAnchor.instance.selectedPlane.center;
 
-            pos.x += Random.Range(-0.5f, 0.5f);
-            pos.z += Random.Range(-0.5f, 0.5f);
+            pos.x += Random.Range(-0.6f, 0.6f);
+            pos.z += Random.Range(-0.6f, 0.6f);
 
             Instantiate(Tree, pos, Quaternion.identity);
         }
@@ -61,7 +61,7 @@ public class GameManager : MonoBehaviour
 
     void Update()
     {
-        if (!GameOverScreen.GameOver)
+        if (!GameOverScreen.GameOver && PlanAnchor.playing)
         {
             TimeSpan t = TimeSpan.FromSeconds(timer);
             timer += Time.deltaTime;

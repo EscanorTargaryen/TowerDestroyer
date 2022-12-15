@@ -55,6 +55,16 @@ public class MutantBehavior : MonoBehaviour, Damagable
 
                 transform.LookAt(target.transform.position);
                 transform.position = Vector3.MoveTowards(transform.position, target.transform.position, step);
+                if (Vector3.Distance(transform.position, target.transform.position) < 0.01)
+                {
+                    _animator.SetTrigger("attack");
+                    _animator.ResetTrigger("idle");
+                    _animator.ResetTrigger("run");
+                    _animator.ResetTrigger("dying");
+                    _state = State.ATTACK;
+                }
+
+
                 break;
             case State.IDLE:
 
@@ -79,13 +89,14 @@ public class MutantBehavior : MonoBehaviour, Damagable
 
                 if (target == null)
                 {
+                    findNewTarget();
                     _animator.SetTrigger("idle");
                     _animator.ResetTrigger("attack");
                     _state = State.IDLE;
                 }
                 else
                 {
-                    if (Vector3.Distance(transform.position, target.transform.position) > 10)
+                    if (target.GetComponent<MariaScript>().isAlive())
                         transform.LookAt(target.transform.position);
                     timepassed += Time.deltaTime;
                     if (timepassed > _animator.GetCurrentAnimatorStateInfo(0).length)
@@ -188,22 +199,6 @@ public class MutantBehavior : MonoBehaviour, Damagable
         return target;
     }
 
-    private void _ShowAndroidToastMessage(string message)
-    {
-        AndroidJavaClass unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
-        AndroidJavaObject unityActivity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
-
-        if (unityActivity != null)
-        {
-            AndroidJavaClass toastClass = new AndroidJavaClass("android.widget.Toast");
-            unityActivity.Call("runOnUiThread", new AndroidJavaRunnable(() =>
-            {
-                AndroidJavaObject toastObject =
-                    toastClass.CallStatic<AndroidJavaObject>("makeText", unityActivity, message, 0);
-                toastObject.Call("show");
-            }));
-        }
-    }
 
     private enum State
     {
