@@ -1,5 +1,6 @@
 using DefaultNamespace;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class MariaScript : MonoBehaviour, Damagable
 {
@@ -9,6 +10,8 @@ public class MariaScript : MonoBehaviour, Damagable
     private GameObject target;
     private Damagable targetD;
     private float life = 100;
+    private float maxLife = 1;
+    public Slider Slider;
     private State _state;
 
     private void Awake()
@@ -103,12 +106,18 @@ public class MariaScript : MonoBehaviour, Damagable
         }
     }
 
+    private void updateScrollBar()
+    {
+        Slider.value = life / maxLife;
+    }
+
+
     private int calls = 0;
 
     public void takeDamage(float damage)
     {
         life -= damage;
-
+        updateScrollBar();
         if (!isAlive())
         {
             if (calls == 0)

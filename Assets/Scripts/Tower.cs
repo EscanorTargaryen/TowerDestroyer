@@ -22,7 +22,7 @@ public class Tower : MonoBehaviour, Damagable
     private void spawnMutant()
     {
         Vector3 m = transform.position;
-        m.y -= 0.3f;
+        m.y -= 0.1f;
 
         var mu = Instantiate(GameManager.mutant, m, Quaternion.identity);
         GameManager.MutantList.Add(mu);

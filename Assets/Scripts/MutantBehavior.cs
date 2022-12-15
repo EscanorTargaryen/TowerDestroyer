@@ -1,5 +1,6 @@
 using DefaultNamespace;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class MutantBehavior : MonoBehaviour, Damagable
 {
@@ -7,7 +8,9 @@ public class MutantBehavior : MonoBehaviour, Damagable
     private bool attacking = false;
     private Animator _animator;
 
-    private float life = 1;
+    private float life = 120;
+    private float maxLife = 1;
+    public Slider Slider;
     private GameObject target;
     private State _state;
 
@@ -105,6 +108,12 @@ public class MutantBehavior : MonoBehaviour, Damagable
         }
     }
 
+    private void updateScrollBar()
+    {
+        Slider.value = life / maxLife;
+    }
+
+
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.Equals(target))
@@ -130,8 +139,8 @@ public class MutantBehavior : MonoBehaviour, Damagable
 
     public void takeDamage(float damage)
     {
-        _ShowAndroidToastMessage("ss");
         life -= damage;
+        updateScrollBar();
         if (!isAlive())
         {
             if (calls == 0)
