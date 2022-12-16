@@ -16,32 +16,32 @@ public class MariaScript : MonoBehaviour, Damagable
     /// The animator of the GameObject
     /// </summary>
     private Animator _animator;
-    
+
     /// <summary>
     /// The current Target
     /// </summary>
     private GameObject target;
-    
+
     /// <summary>
     /// Damagable instance of the target. The target can be the tower or a Mutant
     /// </summary>
     private Damagable targetD;
-    
+
     /// <summary>
     /// The Health points of the Character
     /// </summary>
     private float life = 100;
-    
+
     /// <summary>
     /// The max Health points of the Character
     /// </summary>
     private float maxLife = 100;
-    
+
     /// <summary>
     /// The health bar
     /// </summary>
     public Slider Slider;
-    
+
     /// <summary>
     /// The current state of the character
     /// </summary>
@@ -51,9 +51,10 @@ public class MariaScript : MonoBehaviour, Damagable
     /// Controls how much time has passed since the attack animation to inflict damage on the target
     /// </summary>
     private float timepassed;
+
     private void Awake()
     {
-        transform.LookAt(GameManager.target.transform);
+        lookTarget();
         _animator = GetComponent<Animator>();
     }
 
@@ -65,7 +66,7 @@ public class MariaScript : MonoBehaviour, Damagable
         _animator.SetTrigger("run");
         _animator.ResetTrigger("attack");
     }
-    
+
     void Update()
     {
         if (target != null)
@@ -84,7 +85,7 @@ public class MariaScript : MonoBehaviour, Damagable
 
                     var step = speed * Time.deltaTime;
 
-                    transform.LookAt(target.transform.position);
+                    lookTarget();
                     Vector3 move = new Vector3(target.transform.position.x, transform.position.y,
                         target.transform.position.z);
 
@@ -96,7 +97,7 @@ public class MariaScript : MonoBehaviour, Damagable
                     if (target != null)
                     {
                         if (targetD.isAlive())
-                            transform.LookAt(target.transform.position);
+                            lookTarget();
                         timepassed += Time.deltaTime;
                         if (timepassed > _animator.GetCurrentAnimatorStateInfo(0).length)
                         {
@@ -144,14 +145,14 @@ public class MariaScript : MonoBehaviour, Damagable
             _state = State.ATTACK;
         }
     }
-    
-    private void UpdateHealthBar()
+
+    public void UpdateHealthBar()
     {
         Slider.value = life / maxLife;
     }
-    
+
     private int calls = 0;
-    
+
     /// <inheritdoc />
     public void takeDamage(float damage)
     {
@@ -172,12 +173,26 @@ public class MariaScript : MonoBehaviour, Damagable
         }
     }
 
+    /// <summary>
+    /// Look the target but not change the y value
+    /// </summary>
+    private void lookTarget()
+    {
+        if (target == null)
+            return;
+
+        Vector3 targetPostition = new Vector3(target.transform.position.x,
+            transform.position.y,
+            target.transform.position.z);
+        transform.LookAt(targetPostition);
+    }
+
     /// <inheritdoc />
     public bool isAlive()
     {
         return life > 0;
     }
-    
+
     public void findNewTarget()
     {
         target = null;
@@ -209,7 +224,7 @@ public class MariaScript : MonoBehaviour, Damagable
             targetD = target.GetComponent<MutantBehavior>();
         }
     }
-    
+
     /// <summary>
     /// Enum for the different states of the character
     /// </summary>

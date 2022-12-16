@@ -13,7 +13,7 @@ public class MariaSpawner : MonoBehaviour
     /// <summary>
     /// Time between a new spawn of Maria
     /// </summary>
-    private float spawnRate = 5;
+    private float spawnRate = 6;
     
     void Update()
     {

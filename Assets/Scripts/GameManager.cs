@@ -64,7 +64,7 @@ public class GameManager : MonoBehaviour
     /// <summary>
     /// The cost of a camps in logs
     /// </summary>
-    public int campCost = 1;
+    private int campCost = 5;
 
     /// <summary>
     /// The in game UI

@@ -54,7 +54,11 @@ public class MutantBehavior : MonoBehaviour, Damagable
 
     void Start()
     {
-        _state = State.IDLE;
+        _state = State.RUN;
+        _animator.SetTrigger("run");
+        _animator.ResetTrigger("idle");
+        _animator.ResetTrigger("attack");
+        _animator.ResetTrigger("dying");
     }
 
 
@@ -85,7 +89,7 @@ public class MutantBehavior : MonoBehaviour, Damagable
                     }
                 }
 
-                transform.LookAt(target.transform.position);
+                lookTarget();
                 transform.position = Vector3.MoveTowards(transform.position, target.transform.position, step);
                 if (Vector3.Distance(transform.position, target.transform.position) < 0.01)
                 {
@@ -129,7 +133,7 @@ public class MutantBehavior : MonoBehaviour, Damagable
                 else
                 {
                     if (target.GetComponent<MariaScript>().isAlive())
-                        transform.LookAt(target.transform.position);
+                        lookTarget();
                     timepassed += Time.deltaTime;
                     if (timepassed > _animator.GetCurrentAnimatorStateInfo(0).length)
                     {
@@ -149,6 +153,20 @@ public class MutantBehavior : MonoBehaviour, Damagable
             case State.DYING:
                 break;
         }
+    }
+
+    /// <summary>
+    /// Look the target but not change the y value
+    /// </summary>
+    private void lookTarget()
+    {
+        if (target == null)
+            return;
+
+        Vector3 targetPostition = new Vector3(target.transform.position.x,
+            transform.position.y,
+            target.transform.position.z);
+        transform.LookAt(targetPostition);
     }
 
     private void UpdateHealthBar()
@@ -219,6 +237,7 @@ public class MutantBehavior : MonoBehaviour, Damagable
     public GameObject findNewTarget()
     {
         target = null;
+        var transformPosition = transform.position;
         foreach (var m in GameManager.mariaList)
         {
             if (m.GetComponent<MariaScript>().isAlive())
@@ -228,12 +247,17 @@ public class MutantBehavior : MonoBehaviour, Damagable
                 }
                 else
                 {
-                    if (Vector3.Distance(transform.position, m.transform.position) <
-                        Vector3.Distance(transform.position, target.transform.position))
+                    if (Vector3.Distance(transformPosition, m.transform.position) <
+                        Vector3.Distance(transformPosition, target.transform.position))
                     {
                         target = m;
                     }
                 }
+        }
+
+        if (target != null)
+        {
+            transformPosition.y = target.transform.position.y;
         }
 
         return target;
