@@ -2,18 +2,55 @@ using DefaultNamespace;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// Manage Maria behavior
+/// </summary>
 public class MariaScript : MonoBehaviour, Damagable
 {
+    /// <summary>
+    /// The speed of the character
+    /// </summary>
     float speed = 0.1f;
 
+    /// <summary>
+    /// The animator of the GameObject
+    /// </summary>
     private Animator _animator;
+    
+    /// <summary>
+    /// The current Target
+    /// </summary>
     private GameObject target;
+    
+    /// <summary>
+    /// Damagable instance of the target. The target can be the tower or a Mutant
+    /// </summary>
     private Damagable targetD;
+    
+    /// <summary>
+    /// The Health points of the Character
+    /// </summary>
     private float life = 100;
+    
+    /// <summary>
+    /// The max Health points of the Character
+    /// </summary>
     private float maxLife = 100;
+    
+    /// <summary>
+    /// The health bar
+    /// </summary>
     public Slider Slider;
+    
+    /// <summary>
+    /// The current state of the character
+    /// </summary>
     private State _state;
 
+    /// <summary>
+    /// Controls how much time has passed since the attack animation to inflict damage on the target
+    /// </summary>
+    private float timepassed;
     private void Awake()
     {
         transform.LookAt(GameManager.target.transform);
@@ -28,9 +65,7 @@ public class MariaScript : MonoBehaviour, Damagable
         _animator.SetTrigger("run");
         _animator.ResetTrigger("attack");
     }
-
-    private float timepassed;
-
+    
     void Update()
     {
         if (target != null)
@@ -93,6 +128,10 @@ public class MariaScript : MonoBehaviour, Damagable
         }
     }
 
+    /// <summary>
+    /// Handle colliding with the target
+    /// </summary>
+    /// <param name="other"></param>
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.Equals(target))
@@ -105,19 +144,19 @@ public class MariaScript : MonoBehaviour, Damagable
             _state = State.ATTACK;
         }
     }
-
-    private void updateScrollBar()
+    
+    private void UpdateHealthBar()
     {
         Slider.value = life / maxLife;
     }
-
-
+    
     private int calls = 0;
-
+    
+    /// <inheritdoc />
     public void takeDamage(float damage)
     {
         life -= damage;
-        updateScrollBar();
+        UpdateHealthBar();
         if (!isAlive())
         {
             if (calls == 0)
@@ -133,12 +172,12 @@ public class MariaScript : MonoBehaviour, Damagable
         }
     }
 
-
+    /// <inheritdoc />
     public bool isAlive()
     {
         return life > 0;
     }
-
+    
     public void findNewTarget()
     {
         target = null;
@@ -170,10 +209,10 @@ public class MariaScript : MonoBehaviour, Damagable
             targetD = target.GetComponent<MutantBehavior>();
         }
     }
-
-  
-
-
+    
+    /// <summary>
+    /// Enum for the different states of the character
+    /// </summary>
     private enum State
     {
         ATTACK,

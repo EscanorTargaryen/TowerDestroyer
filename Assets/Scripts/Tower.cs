@@ -2,12 +2,32 @@ using DefaultNamespace;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// The central tower manager
+/// </summary>
 public class Tower : MonoBehaviour, Damagable
 {
+    /// <summary>
+    /// The Health points of the tower
+    /// </summary>
     private float life = 1000;
+
+    /// <summary>
+    /// The max Health points of the tower
+    /// </summary>
     private float maxLife = 1000;
+
+    /// <summary>
+    /// The health bar
+    /// </summary>
     public Slider Slider;
+
     public static Tower instance;
+
+    /// <summary>
+    /// Time passed since you spawned a Mutant
+    /// </summary>
+    private float timepassed = 0;
 
     private void Awake()
     {
@@ -19,6 +39,9 @@ public class Tower : MonoBehaviour, Damagable
         updateScrollBar();
     }
 
+    /// <summary>
+    /// Spawn a new Mutant
+    /// </summary>
     private void spawnMutant()
     {
         Vector3 m = transform.position;
@@ -28,7 +51,6 @@ public class Tower : MonoBehaviour, Damagable
         GameManager.MutantList.Add(mu);
     }
 
-    private float timepassed = 0;
 
     void Update()
     {
@@ -46,8 +68,7 @@ public class Tower : MonoBehaviour, Damagable
         Slider.value = life / maxLife;
     }
 
-    
-
+    /// <inheritdoc />
     public void takeDamage(float damage)
     {
         life -= damage;
@@ -58,6 +79,7 @@ public class Tower : MonoBehaviour, Damagable
         }
     }
 
+    /// <inheritdoc />
     public bool isAlive()
     {
         return life > 0;

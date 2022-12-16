@@ -2,17 +2,50 @@ using DefaultNamespace;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// Manage Mutant behavior
+/// </summary>
 public class MutantBehavior : MonoBehaviour, Damagable
 {
+    /// <summary>
+    /// The speed of the character
+    /// </summary>
     float speed = 0.1f;
-    private bool attacking = false;
+
+    /// <summary>
+    /// The animator of the GameObject
+    /// </summary>
     private Animator _animator;
 
+    /// <summary>
+    /// The Health points of the Character
+    /// </summary>
     private float life = 120;
+
+    /// <summary>
+    /// The max Health points of the Character
+    /// </summary>
     private float maxLife = 120;
+
+    /// <summary>
+    /// The health bar
+    /// </summary>
     public Slider Slider;
+
+    /// <summary>
+    /// The current Target
+    /// </summary>
     private GameObject target;
+
+    /// <summary>
+    /// The current state of the character
+    /// </summary>
     private State _state;
+
+    /// <summary>
+    /// Controls how much time has passed since the attack animation to inflict damage on the target
+    /// </summary>
+    private float timepassed;
 
     private void Awake()
     {
@@ -24,7 +57,6 @@ public class MutantBehavior : MonoBehaviour, Damagable
         _state = State.IDLE;
     }
 
-    private float timepassed;
 
     void Update()
     {
@@ -119,12 +151,15 @@ public class MutantBehavior : MonoBehaviour, Damagable
         }
     }
 
-    private void updateScrollBar()
+    private void UpdateHealthBar()
     {
         Slider.value = life / maxLife;
     }
 
-
+    /// <summary>
+    /// Handle colliding with the target
+    /// </summary>
+    /// <param name="other"></param>
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.Equals(target))
@@ -137,6 +172,10 @@ public class MutantBehavior : MonoBehaviour, Damagable
         }
     }
 
+    /// <summary>
+    /// Handle exit colliding with the target
+    /// </summary>
+    /// <param name="other"></param>
     private void OnTriggerExit(Collider other)
     {
         if (other.gameObject.Equals(target))
@@ -148,10 +187,11 @@ public class MutantBehavior : MonoBehaviour, Damagable
         }
     }
 
+    /// <inheritdoc />
     public void takeDamage(float damage)
     {
         life -= damage;
-        updateScrollBar();
+        UpdateHealthBar();
         if (!isAlive())
         {
             if (calls == 0)
@@ -170,7 +210,7 @@ public class MutantBehavior : MonoBehaviour, Damagable
 
     private int calls = 0;
 
-
+    /// <inheritdoc />
     public bool isAlive()
     {
         return life > 0;
@@ -199,7 +239,9 @@ public class MutantBehavior : MonoBehaviour, Damagable
         return target;
     }
 
-
+    /// <summary>
+    /// Enum for the different states of the character
+    /// </summary>
     private enum State
     {
         IDLE,

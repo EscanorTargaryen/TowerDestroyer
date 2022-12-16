@@ -6,34 +6,68 @@ using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.ARSubsystems;
 using Random = UnityEngine.Random;
 
+/// <summary>
+/// Manage the AR planes
+/// </summary>
 public class PlanAnchor : MonoBehaviour
 {
+    /// <summary>
+    /// AR Raycast manager
+    /// </summary>
     public ARRaycastManager m_RaycastManager;
+    
+    /// <summary>
+    /// AR Plane manager
+    /// </summary>
     public ARPlaneManager m_PlaneManager;
 
     List<ARRaycastHit> m_Hits = new List<ARRaycastHit>();
 
+    /// <summary>
+    /// The Material of the plane when it is selected
+    /// </summary>
     public Material selectedMat;
+    
+    /// <summary>
+    /// The Material of the plane when it isn't selected
+    /// </summary>
     public Material unselectedMat;
+    
+    /// <summary>
+    /// The material of grass
+    /// </summary>
     public Material Grass;
 
+    /// <summary>
+    /// The selected plane
+    /// </summary>
     public ARPlane selectedPlane;
 
-    public GameObject button;
+    /// <summary>
+    /// Play playButton
+    /// </summary>
+    public GameObject playButton;
 
+    /// <summary>
+    /// Text that says "Select a plane" in UI
+    /// </summary>
     public GameObject selectPlaneText;
-    public TMP_Text text;
-
-
+    
+    /// <summary>
+    /// If the games is started
+    /// </summary>
     public static bool playing;
 
+    /// <summary>
+    /// The tower's GameObject
+    /// </summary>
     private GameObject Tower;
     public static PlanAnchor instance;
 
     private void Awake()
     {
         instance = this;
-        button.SetActive(false);
+        playButton.SetActive(false);
         selectPlaneText.SetActive(true);
         Tower = (GameObject)Resources.Load("prefab/twr", typeof(GameObject));
         m_PlaneManager.enabled = true;
@@ -60,7 +94,7 @@ public class PlanAnchor : MonoBehaviour
 
         if (selectedPlane != null && !playing)
         {
-            button.SetActive(true);
+            playButton.SetActive(true);
             selectPlaneText.SetActive(false);
         }
 
@@ -98,10 +132,13 @@ public class PlanAnchor : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Start the game
+    /// </summary>
     public void play()
     {
         playing = true;
-        button.SetActive(false);
+        playButton.SetActive(false);
         MeshRenderer mr = selectedPlane.GetComponent<MeshRenderer>();
 
         mr.material = Grass;
@@ -114,8 +151,10 @@ public class PlanAnchor : MonoBehaviour
         
     }
 
-  
-
+    /// <summary>
+    /// Handle the plane changes
+    /// </summary>
+    /// <param name="args"></param>
     private void planeChanged(ARPlanesChangedEventArgs args)
     {
         if (args.added != null && args.added.Count > 0)

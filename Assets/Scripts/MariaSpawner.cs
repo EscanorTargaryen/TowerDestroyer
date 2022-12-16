@@ -1,11 +1,20 @@
 using UnityEngine;
 
+/// <summary>
+/// Camp Manager
+/// </summary>
 public class MariaSpawner : MonoBehaviour
 {
-    private float timePassed=10;
+    /// <summary>
+    /// Time passed since you spawned a Maria
+    /// </summary>
+    private float timePassed=6;
+    
+    /// <summary>
+    /// Time between a new spawn of Maria
+    /// </summary>
     private float spawnRate = 5;
-
-   
+    
     void Update()
     {
         if (!GameOverScreen.GameOver)

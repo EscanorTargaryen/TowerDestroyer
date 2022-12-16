@@ -5836,8 +5836,8 @@ IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void MariaScript__ctor_mA29321F89F9FD5EDEF73E
 		__this->___speed_4 = (0.100000001f);
 		// private float life = 100;
 		__this->___life_8 = (100.0f);
-		// private float maxLife = 1;
-		__this->___maxLife_9 = (1.0f);
+		// private float maxLife = 100;
+		__this->___maxLife_9 = (100.0f);
 		MonoBehaviour__ctor_m592DB0105CA0BC97AA1C5F4AD27B12D68A3B7C1E(__this, NULL);
 		return;
 	}
@@ -6710,8 +6710,8 @@ IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void MutantBehavior__ctor_m2A032DF9263D13A137
 		__this->___speed_4 = (0.100000001f);
 		// private float life = 120;
 		__this->___life_7 = (120.0f);
-		// private float maxLife = 1;
-		__this->___maxLife_8 = (1.0f);
+		// private float maxLife = 120;
+		__this->___maxLife_8 = (120.0f);
 		MonoBehaviour__ctor_m592DB0105CA0BC97AA1C5F4AD27B12D68A3B7C1E(__this, NULL);
 		return;
 	}
